@@ -1,27 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Dapr.Actors;
-using Microsoft.eShopOnContainers.Services.Ordering.API.Application.Models;
+﻿namespace Microsoft.eShopOnDapr.Services.Ordering.API.Actors;
 
-namespace Microsoft.eShopOnContainers.Services.Ordering.API.Actors
+public interface IOrderingProcessActor : IActor
 {
-    public interface IOrderingProcessActor : IActor
-    {
-        Task Submit(string userId, string userName, string street, string city,
-            string zipCode, string state, string country, CustomerBasket basket);
+    Task SubmitAsync(
+        string buyerId,
+        string buyerEmail,
+        string street,
+        string city,
+        string state,
+        string country,
+        CustomerBasket basket);
 
-        Task NotifyStockConfirmed();
+    Task NotifyStockConfirmedAsync();
 
-        Task NotifyStockRejected(List<int> rejectedProductIds);
+    Task NotifyStockRejectedAsync(List<int> rejectedProductIds);
 
-        Task NotifyPaymentSucceeded();
+    Task NotifyPaymentSucceededAsync();
 
-        Task NotifyPaymentFailed();
+    Task NotifyPaymentFailedAsync();
 
-        Task<bool> Cancel();
+    Task<bool> CancelAsync();
 
-        Task<bool> Ship();
+    Task<bool> ShipAsync();
 
-        Task<Order> GetOrderDetails();
-    }
+    Task<OrderState> GetOrderDetails();
 }

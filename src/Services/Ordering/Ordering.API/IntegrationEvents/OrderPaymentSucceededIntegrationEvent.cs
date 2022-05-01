@@ -1,16 +1,3 @@
-﻿namespace Microsoft.eShopOnContainers.Services.Ordering.API.IntegrationEvents
-{
-    using System;
-    using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Events;
+﻿namespace Microsoft.eShopOnDapr.Services.Ordering.API.IntegrationEvents;
 
-    public class OrderPaymentSucceededIntegrationEvent : IntegrationEvent
-    {
-        public Guid OrderId { get; set; }
-
-        public OrderPaymentSucceededIntegrationEvent()
-        {
-        }
-
-        public OrderPaymentSucceededIntegrationEvent(Guid orderId) => OrderId = orderId;
-    }
-}
+public record OrderPaymentSucceededIntegrationEvent(Guid OrderId) : IntegrationEvent;

@@ -1,25 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.eShopOnContainers.Services.Catalog.API.Model;
+﻿namespace Microsoft.eShopOnDapr.Services.Catalog.API.Infrastructure.EntityConfigurations;
 
-namespace Microsoft.eShopOnContainers.Services.Catalog.API.Infrastructure.EntityConfigurations
+public class CatalogBrandEntityTypeConfiguration : IEntityTypeConfiguration<CatalogBrand>
 {
-    class CatalogBrandEntityTypeConfiguration
-        : IEntityTypeConfiguration<CatalogBrand>
+    public void Configure(EntityTypeBuilder<CatalogBrand> builder)
     {
-        public void Configure(EntityTypeBuilder<CatalogBrand> builder)
-        {
-            builder.ToTable("CatalogBrand");
+        builder.ToTable("CatalogBrand");
 
-            builder.HasKey(ci => ci.Id);
+        builder.HasKey(brand => brand.Id);
 
-            builder.Property(ci => ci.Id)
-               .UseHiLo("catalog_brand_hilo")
-               .IsRequired();
+        builder.Property(brand => brand.Id)
+            .UseHiLo("catalog_brand_hilo")
+            .IsRequired();
 
-            builder.Property(cb => cb.Brand)
-                .IsRequired()
-                .HasMaxLength(100);
-        }
+        builder.Property(brand => brand.Name)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.HasData(
+            new CatalogBrand(1, ".NET"),
+            new CatalogBrand(2, "Dapr"),
+            new CatalogBrand(3, "Other"));
     }
 }

@@ -1,32 +1,15 @@
-﻿using System;
+﻿namespace Microsoft.eShopOnDapr.Services.Basket.API.Model;
 
-namespace Basket.API.Model
-{
-    public class BasketCheckout
-    {
-        public string City { get; set; }
+public record BasketCheckout(
+    string UserEmail,
+    string City,
+    string Street,
+    string State,
+    string Country,
+    string CardNumber,
+    string CardHolderName,
+    DateTime CardExpiration,
+    string CardSecurityCode
+);
 
-        public string Street { get; set; }
-
-        public string State { get; set; }
-
-        public string Country { get; set; }
-
-        public string ZipCode { get; set; }
-
-        public string CardNumber { get; set; }
-
-        public string CardHolderName { get; set; }
-
-        public DateTime CardExpiration { get; set; }
-
-        public string CardSecurityNumber { get; set; }
-
-        public int CardTypeId { get; set; }
-
-        public string Buyer { get; set; }
-
-        public Guid RequestId { get; set; }
-    }
-}
 

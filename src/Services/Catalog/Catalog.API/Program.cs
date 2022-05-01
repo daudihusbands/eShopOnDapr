@@ -1,121 +1,58 @@
-﻿using Autofac.Extensions.DependencyInjection;
-using Catalog.API.Extensions;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.eShopOnContainers.BuildingBlocks.IntegrationEventLogEF;
-using Microsoft.eShopOnContainers.Services.Catalog.API.Infrastructure;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Serilog;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
+﻿var appName = "Catalog API";
+var builder = WebApplication.CreateBuilder(args);
 
-namespace Microsoft.eShopOnContainers.Services.Catalog.API
+builder.AddCustomConfiguration();
+builder.AddCustomSerilog();
+builder.AddCustomSwagger();
+builder.AddCustomHealthChecks();
+builder.AddCustomApplicationServices();
+builder.AddCustomDatabase();
+
+builder.Services.AddDaprClient();
+builder.Services.AddControllers();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static readonly string Namespace = typeof(Program).Namespace;
-        public static readonly string AppName = Namespace.Substring(Namespace.LastIndexOf('.', Namespace.LastIndexOf('.') - 1) + 1);
+    app.UseDeveloperExceptionPage();
+    app.UseCustomSwagger();
+}
 
-        public static int Main(string[] args)
-        {
-            var configuration = GetConfiguration();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Pics")),
+    RequestPath = "/pics"
+});
 
-            Log.Logger = CreateSerilogLogger(configuration);
+app.UseCloudEvents();
 
-            try
-            {
-                Log.Information("Configuring web host ({ApplicationContext})...", AppName);
-                var host = CreateHostBuilder(configuration, args);
+app.MapGet("/", () => Results.LocalRedirect("~/swagger"));
+app.MapControllers();
+app.MapSubscribeHandler();
+app.MapHealthChecks("/hc", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.MapHealthChecks("/liveness", new HealthCheckOptions
+{
+    Predicate = r => r.Name.Contains("self")
+});
 
-                Log.Information("Applying migrations ({ApplicationContext})...", AppName);
-                host.MigrateDbContext<CatalogContext>((context, services) =>
-                {
-                    var env = services.GetService<IWebHostEnvironment>();
-                    var settings = services.GetService<IOptions<CatalogSettings>>();
-                    var logger = services.GetService<ILogger<CatalogContextSeed>>();
+try
+{
+    app.Logger.LogInformation("Applying database migration ({ApplicationName})...", appName);
+    app.ApplyDatabaseMigration();
 
-                    new CatalogContextSeed()
-                        .SeedAsync(context, env, settings, logger)
-                        .Wait();
-                })
-                .MigrateDbContext<IntegrationEventLogContext>((_, __) => { });
-
-                Log.Information("Starting web host ({ApplicationContext})...", AppName);
-                host.Run();
-
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Program terminated unexpectedly ({ApplicationContext})!", AppName);
-                return 1;
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
-        }
-
-        private static IWebHost CreateHostBuilder(IConfiguration configuration, string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseConfiguration(configuration)
-                .CaptureStartupErrors(false)
-                .ConfigureKestrel(options =>
-                {
-                    var httpPort = configuration.GetValue("PORT", 80);
-                    options.Listen(IPAddress.Any, httpPort, listenOptions =>
-                    {
-                        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-                    });
-
-                })
-                .UseStartup<Startup>()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseWebRoot("Pics")
-                .UseSerilog()
-                .Build();
-
-        private static Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
-        {
-            var seqServerUrl = configuration["Serilog:SeqServerUrl"];
-            var logstashUrl = configuration["Serilog:LogstashUrl"];
-            return new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .Enrich.WithProperty("ApplicationContext", AppName)
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .WriteTo.Seq(string.IsNullOrWhiteSpace(seqServerUrl) ? "http://seq" : seqServerUrl)
-                .WriteTo.Http(string.IsNullOrWhiteSpace(logstashUrl) ? "http://logstash:8080" : logstashUrl)
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger();
-        }
-
-        private static IConfiguration GetConfiguration()
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables();
-
-            var config = builder.Build();
-
-            if (config.GetValue<bool>("UseVault", false))
-            {
-                builder.AddAzureKeyVault(
-                    $"https://{config["Vault:Name"]}.vault.azure.net/",
-                    config["Vault:ClientId"],
-                    config["Vault:ClientSecret"]);
-            }
-
-            return builder.Build();
-        }
-    }
+    app.Logger.LogInformation("Starting web host ({ApplicationName})...", appName);
+    app.Run();
+}
+catch (Exception ex)
+{
+    app.Logger.LogCritical(ex, "Host terminated unexpectedly ({ApplicationName})...", appName);
+}
+finally
+{
+    Serilog.Log.CloseAndFlush();
 }
