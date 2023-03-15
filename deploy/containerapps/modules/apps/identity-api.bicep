@@ -4,19 +4,27 @@ param seqFqdn string
 param containerAppsEnvironmentId string
 param containerAppsEnvironmentDomain string
 
+param managedIdentityId string
+
 @secure()
 param identityDbConnectionString string
 
-resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
+resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: 'identity-api'
   location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentityId}': {}
+    }
+  }
   properties: {
-    kubeEnvironmentId: containerAppsEnvironmentId
+    managedEnvironmentId: containerAppsEnvironmentId
     template: {
       containers: [
         {
           name: 'identity-api'
-          image: 'eshopdapr/identity.api:20220331'
+          image: 'eshopdapr/identity.api:latest'
           env: [
             {
               name: 'ASPNETCORE_ENVIRONMENT'
@@ -59,7 +67,12 @@ resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
       }
     }
     configuration: {
-      activeResivionsMode: 'single'
+      activeRevisionsMode: 'single'
+      dapr: {
+        enabled: true
+        appId: 'identity-api'
+        appPort: 80
+      }
       ingress: {
         external: true
         targetPort: 80

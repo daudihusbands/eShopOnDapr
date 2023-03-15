@@ -1,5 +1,5 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-ARG NET_IMAGE=6.0-bullseye-slim
+ARG NET_IMAGE=7.0-bullseye-slim
 FROM mcr.microsoft.com/dotnet/aspnet:${NET_IMAGE} AS base
 WORKDIR /app
 EXPOSE 80
@@ -18,6 +18,7 @@ COPY ["src/Services/Ordering/Ordering.API/Ordering.API.csproj", "src/Services/Or
 COPY ["src/Services/Payment/Payment.API/Payment.API.csproj", "src/Services/Payment/Payment.API/"]
 COPY ["src/Web/BlazorClient.Host/BlazorClient.Host.csproj", "src/Web/BlazorClient.Host/"]
 COPY ["src/Web/BlazorClient/BlazorClient.csproj", "src/Web/BlazorClient/"]
+COPY ["src/Web/WebStatus/WebStatus.csproj", "src/Web/WebStatus/"]
 COPY ["docker-compose.dcproj", "./"]
 COPY ["NuGet.config", "./"]
 COPY ["eShopOnDapr.sln", "./"]

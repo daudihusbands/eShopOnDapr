@@ -5,6 +5,14 @@ param uniqueSeed string = '${resourceGroup().id}-${deployment().name}'
 // Infrastructure
 ////////////////////////////////////////////////////////////////////////////////
 
+module managedIdentity 'modules/infra/identity.bicep' = {
+  name: '${deployment().name}-infra-managed-identity'
+  params: {
+    location: location
+    uniqueSeed: uniqueSeed
+  }
+}
+
 module containerAppsEnvironment 'modules/infra/container-apps-env.bicep' = {
   name: '${deployment().name}-infra-container-app-env'
   params: {
@@ -37,6 +45,50 @@ module sqlServer 'modules/infra/sql-server.bicep' = {
   }
 }
 
+module keyVault 'modules/infra/keyvault.bicep' = {
+  name: '${deployment().name}-infra-keyvault'
+  params: {
+    location: location
+    uniqueSeed: uniqueSeed
+    managedIdentityObjectId: managedIdentity.outputs.identityObjectId
+    catalogDbConnectionString: sqlServer.outputs.catalogDbConnectionString
+    identityDbConnectionString: sqlServer.outputs.identityDbConnectionString
+    orderingDbConnectionString: sqlServer.outputs.orderingDbConnectionString
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Dapr components
+////////////////////////////////////////////////////////////////////////////////
+
+module daprPubSub 'modules/dapr/pubsub.bicep' = {
+  name: '${deployment().name}-dapr-pubsub'
+  params: {
+    containerAppsEnvironmentName: containerAppsEnvironment.outputs.name
+    serviceBusConnectionString: serviceBus.outputs.connectionString
+  }
+}
+
+module daprStateStore 'modules/dapr/statestore.bicep' = {
+  name: '${deployment().name}-dapr-statestore'
+  params: {
+    containerAppsEnvironmentName: containerAppsEnvironment.outputs.name
+    cosmosDbName: cosmos.outputs.cosmosDbName
+    cosmosCollectionName: cosmos.outputs.cosmosCollectionName
+    cosmosUrl: cosmos.outputs.cosmosUrl
+    cosmosKey: cosmos.outputs.cosmosKey
+  }
+}
+
+module daprSecretStore 'modules/dapr/secretstore.bicep' = {
+  name: '${deployment().name}-dapr-secretstore'
+  params: {
+    containerAppsEnvironmentName: containerAppsEnvironment.outputs.name
+    vaultName: keyVault.outputs.vaultName
+    managedIdentityClientId: managedIdentity.outputs.identityClientId
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Container apps
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,67 +96,59 @@ module sqlServer 'modules/infra/sql-server.bicep' = {
 module basketApi 'modules/apps/basket-api.bicep' = {
   name: '${deployment().name}-app-basket-api'
   dependsOn: [
-    containerAppsEnvironment
-    cosmos
+    daprPubSub
+    daprStateStore
     seq
-    serviceBus
   ]
   params: {
     location: location
     seqFqdn: seq.outputs.fqdn
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.containerAppsEnvironmentId
-    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.containerAppsEnvironmentDomain
-    cosmosDbName: cosmos.outputs.cosmosDbName
-    cosmosCollectionName: cosmos.outputs.cosmosCollectionName
-    cosmosUrl: cosmos.outputs.cosmosUrl
-    cosmosKey: cosmos.outputs.cosmosKey
-    serviceBusConnectionString: serviceBus.outputs.connectionString
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.domain
   }
 }
 
 module blazorClient 'modules/apps/blazor-client.bicep' = {
   name: '${deployment().name}-app-blazor-client'
   dependsOn: [
-    containerAppsEnvironment
     seq
   ]
   params: {
     location: location
     seqFqdn: seq.outputs.fqdn
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.containerAppsEnvironmentId
-    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.containerAppsEnvironmentDomain
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.domain
   }
 }
 
 module catalogApi 'modules/apps/catalog-api.bicep' = {
   name: '${deployment().name}-app-catalog-api'
   dependsOn: [
-    containerAppsEnvironment
+    daprPubSub
+    daprSecretStore
     seq
-    serviceBus
-    sqlServer
   ]
   params: {
     location: location
     seqFqdn: seq.outputs.fqdn
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.containerAppsEnvironmentId
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    managedIdentityId: managedIdentity.outputs.identityId
     catalogDbConnectionString: sqlServer.outputs.catalogDbConnectionString
-    serviceBusConnectionString: serviceBus.outputs.connectionString
   }
 }
 
 module identityApi 'modules/apps/identity-api.bicep' = {
   name: '${deployment().name}-app-identity-api'
   dependsOn: [
-    containerAppsEnvironment
+    daprSecretStore
     seq
-    sqlServer
   ]
   params: {
     location: location
     seqFqdn: seq.outputs.fqdn
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.containerAppsEnvironmentId
-    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.containerAppsEnvironmentDomain
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.domain
+    managedIdentityId: managedIdentity.outputs.identityId
     identityDbConnectionString: sqlServer.outputs.identityDbConnectionString
   }
 }
@@ -112,62 +156,51 @@ module identityApi 'modules/apps/identity-api.bicep' = {
 module orderingApi 'modules/apps/ordering-api.bicep' = {
   name: '${deployment().name}-app-ordering-api'
   dependsOn: [
-    containerAppsEnvironment
-    cosmos
+    daprPubSub
+    daprStateStore
+    daprSecretStore
     seq
-    serviceBus
-    sqlServer
   ]
   params: {
     location: location
     seqFqdn: seq.outputs.fqdn
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.containerAppsEnvironmentId
-    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.containerAppsEnvironmentDomain
-    cosmosDbName: cosmos.outputs.cosmosDbName
-    cosmosCollectionName: cosmos.outputs.cosmosCollectionName
-    cosmosUrl: cosmos.outputs.cosmosUrl
-    cosmosKey: cosmos.outputs.cosmosKey
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.domain
+    managedIdentityId: managedIdentity.outputs.identityId
     orderingDbConnectionString: sqlServer.outputs.identityDbConnectionString
-    serviceBusConnectionString: serviceBus.outputs.connectionString
   }
 }
 
 module paymentApi 'modules/apps/payment-api.bicep' = {
   name: '${deployment().name}-app-payment-api'
   dependsOn: [
-    containerAppsEnvironment
+    daprPubSub
     seq
-    serviceBus
   ]
   params: {
     location: location
     seqFqdn: seq.outputs.fqdn
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.containerAppsEnvironmentId
-    serviceBusConnectionString: serviceBus.outputs.connectionString
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
   }
 }
 
 module seq 'modules/apps/seq.bicep' = {
   name: '${deployment().name}-app-seq'
-  dependsOn: [
-    containerAppsEnvironment
-  ]
   params: {
     location: location
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.containerAppsEnvironmentId
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
   }
 }
 
 module webshoppingAgg 'modules/apps/webshopping-agg.bicep' = {
   name: '${deployment().name}-app-webshopping-agg'
   dependsOn: [
-    containerAppsEnvironment
     seq
   ]
   params: {
     location: location
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.containerAppsEnvironmentId
-    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.containerAppsEnvironmentDomain
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.domain
     seqFqdn: seq.outputs.fqdn
   }
 }
@@ -175,25 +208,23 @@ module webshoppingAgg 'modules/apps/webshopping-agg.bicep' = {
 module webshoppingGW 'modules/apps/webshopping-gw.bicep' = {
   name: '${deployment().name}-app-webshopping-gw'
   dependsOn: [
-    containerAppsEnvironment
     seq
   ]
   params: {
     location: location
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.containerAppsEnvironmentId
-    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.containerAppsEnvironmentDomain
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.domain
   }
 }
 
 module webstatus 'modules/apps/webstatus.bicep' = {
   name: '${deployment().name}-app-webstatus'
   dependsOn: [
-    containerAppsEnvironment
     seq
   ]
   params: {
     location: location
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.containerAppsEnvironmentId
-    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.containerAppsEnvironmentDomain
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    containerAppsEnvironmentDomain: containerAppsEnvironment.outputs.domain
   }
 }

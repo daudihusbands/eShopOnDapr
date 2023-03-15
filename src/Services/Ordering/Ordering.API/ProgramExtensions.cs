@@ -9,10 +9,9 @@ public static class ProgramExtensions
 
     public static void AddCustomConfiguration(this WebApplicationBuilder builder)
     {
-        // Disabled temporarily until https://github.com/dapr/dotnet-sdk/issues/779 is resolved.
-        //builder.Configuration.AddDaprSecretStore(
-        //    "eshop-secretstore",
-        //    new DaprClientBuilder().Build());
+        builder.Configuration.AddDaprSecretStore(
+           "eshopondapr-secretstore",
+           new DaprClientBuilder().Build());
     }
 
     public static void AddCustomSerilog(this WebApplicationBuilder builder)
@@ -22,7 +21,7 @@ public static class ProgramExtensions
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .WriteTo.Console()
-            .WriteTo.Seq(seqServerUrl)
+            .WriteTo.Seq(seqServerUrl!)
             .Enrich.WithProperty("ApplicationName", AppName)
             .CreateLogger();
 
@@ -100,9 +99,9 @@ public static class ProgramExtensions
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddDapr()
             .AddSqlServer(
-                builder.Configuration["ConnectionStrings:OrderingDB"],
+                builder.Configuration["ConnectionStrings:OrderingDB"]!,
                 name: "OrderingDB-check",
-                tags: new string[] { "orderdb" });
+                tags: new [] { "orderdb" });
 
     public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
     {
@@ -117,7 +116,7 @@ public static class ProgramExtensions
 
     public static void AddCustomDatabase(this WebApplicationBuilder builder) =>
         builder.Services.AddDbContext<OrderingDbContext>(
-            options => options.UseSqlServer(builder.Configuration["ConnectionStrings:OrderingDB"]));
+            options => options.UseSqlServer(builder.Configuration["ConnectionStrings:OrderingDB"]!));
 
     public static void ApplyDatabaseMigration(this WebApplication app)
     {
@@ -125,7 +124,7 @@ public static class ProgramExtensions
         // recommended for production scenarios. Consider generating SQL scripts from
         // migrations instead.
         using var scope = app.Services.CreateScope();
-        
+
         var retryPolicy = CreateRetryPolicy(app.Configuration, Log.Logger);
         var context = scope.ServiceProvider.GetRequiredService<OrderingDbContext>();
 
@@ -136,12 +135,12 @@ public static class ProgramExtensions
     {
         // Only use a retry policy if configured to do so.
         // When running in an orchestrator/K8s, it will take care of restarting failed services.
-        if (bool.TryParse(configuration["RetryMigrations"], out bool retryMigrations))
+        if (bool.TryParse(configuration["RetryMigrations"], out bool _))
         {
             return Policy.Handle<Exception>().
                 WaitAndRetryForever(
-                    sleepDurationProvider: retry => TimeSpan.FromSeconds(5),
-                    onRetry: (exception, retry, timeSpan) =>
+                    sleepDurationProvider: _ => TimeSpan.FromSeconds(5),
+                    onRetry: (exception, retry, _) =>
                     {
                         logger.Warning(
                             exception,
