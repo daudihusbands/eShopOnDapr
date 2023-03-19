@@ -1,0 +1,26 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>Nwl.Integrations.CommonExtensions</id>
+		<version>$version$</version>
+		<title>Nwl.Integrations.CommonExtensions</title>
+		<authors>NWL Integration Dev Team</authors>
+		<owners>dhusbands</owners>
+		<projectUrl>https://dev.azure.com/nwl/Portfolio/_git/Integration.Core</projectUrl>
+		<repository  type="git"  url="https://dev.azure.com/nwl/Portfolio/_git/Integration.Core"></repository>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Unit Testing library with extentions for NWL Common Integration infrastructure.</description>
+		<releaseNotes></releaseNotes>
+		<copyright>Copyright 2023</copyright>
+		<dependencies>
+			<group targetFramework=".NETStandard2.1">
+				<dependency id="Nwl.Integrations.SharedKernel" version="$version$" exclude="Build,Analyzers" />
+			</group>
+		</dependencies>
+
+	</metadata>
+	<files>
+		<file src="Nwl.Integrations.CommonExtensions.dll" target="lib\netstandard2.1"/>
+		<file src="Nwl.Integrations.CommonExtensions.xml" target="lib\netstandard2.1"/>
+	</files>
+</package>

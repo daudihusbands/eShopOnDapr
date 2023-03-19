@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <RootNamespace>NewApps.Domain</RootNamespace>
+        <AssemblyName>NewApps.Domain</AssemblyName>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Entities\TodoItem.cs" />
+      <Compile Remove="Entities\TodoList.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="7.0.2" />
+        <PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
+
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\SharedKernel\SharedKernel\SharedKernel.csproj" />
+    </ItemGroup>
+
+</Project>
