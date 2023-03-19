@@ -523,6 +523,7 @@ namespace NewApps.Domain.Entities.ACORD
             }
         }
     }
+    [Owned]
     public class SERVICE_PROGRAM
     {
         [XmlArray("IDS")]

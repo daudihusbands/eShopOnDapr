@@ -18,38 +18,12 @@ namespace NewApps.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TC = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WithTC", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Annuity",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    QualPlanTypeId = table.Column<int>(type: "int", nullable: false),
-                    QualPlanSubTypeId = table.Column<int>(type: "int", nullable: false),
-                    RiderRiderCode = table.Column<string>(name: "Rider_RiderCode", type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Annuity", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Annuity_WithTC_QualPlanSubTypeId",
-                        column: x => x.QualPlanSubTypeId,
-                        principalTable: "WithTC",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Annuity_WithTC_QualPlanTypeId",
-                        column: x => x.QualPlanTypeId,
-                        principalTable: "WithTC",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -62,39 +36,43 @@ namespace NewApps.Infrastructure.Migrations
                     CusipNum = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TRANSACTIONIDS = table.Column<string>(name: "TRANSACTION_IDS", type: "nvarchar(max)", nullable: false),
                     STATECODE = table.Column<string>(name: "STATE_CODE", type: "nvarchar(max)", nullable: false),
-                    LineOfBusinessId = table.Column<int>(type: "int", nullable: false),
+                    LineOfBusinessId = table.Column<int>(type: "int", nullable: true),
                     InitDepositAmt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AnnualPaymentAmt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentAmt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AnnuityId = table.Column<int>(type: "int", nullable: false),
+                    AnnuityQualPlanTypeId = table.Column<int>(name: "Annuity_QualPlanTypeId", type: "int", nullable: true),
+                    AnnuityQualPlanSubTypeId = table.Column<int>(name: "Annuity_QualPlanSubTypeId", type: "int", nullable: true),
+                    AnnuityRiderRiderCode = table.Column<string>(name: "Annuity_Rider_RiderCode", type: "nvarchar(max)", nullable: false),
                     PolNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PlanName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ShortName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    JurisdictionId = table.Column<int>(type: "int", nullable: false),
+                    JurisdictionId = table.Column<int>(type: "int", nullable: true),
                     ApplicationInfoTrackingID = table.Column<string>(name: "ApplicationInfo_TrackingID", type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Policy", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Policy_Annuity_AnnuityId",
-                        column: x => x.AnnuityId,
-                        principalTable: "Annuity",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Policy_WithTC_Annuity_QualPlanSubTypeId",
+                        column: x => x.AnnuityQualPlanSubTypeId,
+                        principalTable: "WithTC",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Policy_WithTC_Annuity_QualPlanTypeId",
+                        column: x => x.AnnuityQualPlanTypeId,
+                        principalTable: "WithTC",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Policy_WithTC_JurisdictionId",
                         column: x => x.JurisdictionId,
                         principalTable: "WithTC",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Policy_WithTC_LineOfBusinessId",
                         column: x => x.LineOfBusinessId,
                         principalTable: "WithTC",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -105,7 +83,7 @@ namespace NewApps.Infrastructure.Migrations
                     CommissionAmt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FinActivityGrossAmt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FinActivityNetAmt = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FinActivityTypeId = table.Column<int>(type: "int", nullable: false),
+                    FinActivityTypeId = table.Column<int>(type: "int", nullable: true),
                     ReferenceNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PolicyId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -121,8 +99,7 @@ namespace NewApps.Infrastructure.Migrations
                         name: "FK_FinancialActivity_WithTC_FinActivityTypeId",
                         column: x => x.FinActivityTypeId,
                         principalTable: "WithTC",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -132,11 +109,11 @@ namespace NewApps.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PolicyId = table.Column<int>(type: "int", nullable: false),
-                    HoldingTypeCodeId = table.Column<int>(type: "int", nullable: false),
-                    HoldingStatusId = table.Column<int>(type: "int", nullable: false),
+                    HoldingTypeCodeId = table.Column<int>(type: "int", nullable: true),
+                    HoldingStatusId = table.Column<int>(type: "int", nullable: true),
                     CarrierAdminSystem = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CurrencyTypeCodeId = table.Column<int>(type: "int", nullable: false),
-                    AccountDesignationId = table.Column<int>(type: "int", nullable: false),
+                    CurrencyTypeCodeId = table.Column<int>(type: "int", nullable: true),
+                    AccountDesignationId = table.Column<int>(type: "int", nullable: true),
                     DistributorClientAcctNum = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -156,26 +133,22 @@ namespace NewApps.Infrastructure.Migrations
                         name: "FK_Holdings_WithTC_AccountDesignationId",
                         column: x => x.AccountDesignationId,
                         principalTable: "WithTC",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Holdings_WithTC_CurrencyTypeCodeId",
                         column: x => x.CurrencyTypeCodeId,
                         principalTable: "WithTC",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Holdings_WithTC_HoldingStatusId",
                         column: x => x.HoldingStatusId,
                         principalTable: "WithTC",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Holdings_WithTC_HoldingTypeCodeId",
                         column: x => x.HoldingTypeCodeId,
                         principalTable: "WithTC",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -255,7 +228,7 @@ namespace NewApps.Infrastructure.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PaymentAmt = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentFormId = table.Column<int>(type: "int", nullable: false),
+                    PaymentFormId = table.Column<int>(type: "int", nullable: true),
                     SourceOfFundsTCId = table.Column<int>(type: "int", nullable: false),
                     SourceOfFundsDetails = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FinancialActivityId = table.Column<string>(type: "nvarchar(450)", nullable: true)
@@ -272,8 +245,7 @@ namespace NewApps.Infrastructure.Migrations
                         name: "FK_Payment_WithTC_PaymentFormId",
                         column: x => x.PaymentFormId,
                         principalTable: "WithTC",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Payment_WithTC_SourceOfFundsTCId",
                         column: x => x.SourceOfFundsTCId,
@@ -565,7 +537,6 @@ namespace NewApps.Infrastructure.Migrations
                     ExchangeorReplacementAnotherAnnuityTimeFrame3 = table.Column<string>(name: "ExchangeorReplacement_AnotherAnnuityTimeFrame3", type: "nvarchar(max)", nullable: false),
                     ExchangeorReplacementAnotherAnnuityDate3 = table.Column<string>(name: "ExchangeorReplacement_AnotherAnnuityDate3", type: "nvarchar(max)", nullable: false),
                     CommissionOption = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AnnuityId = table.Column<int>(type: "int", nullable: true),
                     FinancialActivityId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     PaymentId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     PolicyId = table.Column<int>(type: "int", nullable: true)
@@ -573,11 +544,6 @@ namespace NewApps.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OLifEExtension", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OLifEExtension_Annuity_AnnuityId",
-                        column: x => x.AnnuityId,
-                        principalTable: "Annuity",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_OLifEExtension_FinancialActivity_FinancialActivityId",
                         column: x => x.FinancialActivityId,
@@ -711,16 +677,6 @@ namespace NewApps.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Annuity_QualPlanSubTypeId",
-                table: "Annuity",
-                column: "QualPlanSubTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Annuity_QualPlanTypeId",
-                table: "Annuity",
-                column: "QualPlanTypeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_FinancialActivity_FinActivityTypeId",
                 table: "FinancialActivity",
                 column: "FinActivityTypeId");
@@ -756,11 +712,6 @@ namespace NewApps.Infrastructure.Migrations
                 column: "PolicyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OLifEExtension_AnnuityId",
-                table: "OLifEExtension",
-                column: "AnnuityId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_OLifEExtension_FinancialActivityId",
                 table: "OLifEExtension",
                 column: "FinancialActivityId");
@@ -791,9 +742,14 @@ namespace NewApps.Infrastructure.Migrations
                 column: "SourceOfFundsTCId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Policy_AnnuityId",
+                name: "IX_Policy_Annuity_QualPlanSubTypeId",
                 table: "Policy",
-                column: "AnnuityId");
+                column: "Annuity_QualPlanSubTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Policy_Annuity_QualPlanTypeId",
+                table: "Policy",
+                column: "Annuity_QualPlanTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Policy_JurisdictionId",
@@ -864,9 +820,6 @@ namespace NewApps.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Policy");
-
-            migrationBuilder.DropTable(
-                name: "Annuity");
 
             migrationBuilder.DropTable(
                 name: "WithTC");

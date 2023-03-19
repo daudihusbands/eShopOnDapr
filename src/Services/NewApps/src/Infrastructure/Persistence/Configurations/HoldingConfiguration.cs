@@ -29,5 +29,13 @@ public class PolicyConfiguration : IEntityTypeConfiguration<Policy>
             cfg.OwnsMany(x => x.Extensions);
 
         });
+
+        builder.OwnsOne(x => x.Annuity, cfg =>
+        {
+            cfg.OwnsOne(x => x.Rider);
+
+
+        });
+
     }
 }

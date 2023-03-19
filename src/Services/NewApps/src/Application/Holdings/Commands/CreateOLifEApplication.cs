@@ -1,4 +1,5 @@
 ﻿using NewApps.Application.Holdings;
+using NewApps.Domain.Entities.ACORD;
 
 namespace NewApps.Application.Holdings.Commands;
 public class CreateOLifEApplication
@@ -22,5 +23,5 @@ public class CreateOLifEApplication
         }
     }
 
-    public record Command(WithTC HoldingTypeCode) : IRequest<Holding> { }
+    public record Command(HoldingTypeCode HoldingTypeCode) : IRequest<Holding> { }
 }

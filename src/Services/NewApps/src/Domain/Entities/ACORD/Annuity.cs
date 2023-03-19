@@ -2,7 +2,8 @@
 
 namespace NewApps.Domain.Entities.ACORD
 {
-    public class Annuity : AcordModel
+    [Owned]
+    public class Annuity 
     {
 
         public static string GetAcord103IRSQualCodeTranslation(string dtccIRSQualificationCode)
@@ -151,8 +152,11 @@ namespace NewApps.Domain.Entities.ACORD
                     }
             }
         }
-        public WithTC QualPlanType { get; set; }
-        public WithTC QualPlanSubType { get; set; }
+        public QualPlanTypeTC QualPlanType { get; set; }
+        public int? QualPlanTypeId { get; set; }    
+        public QualPlanSubTypeTC QualPlanSubType { get; set; }
+        public int? QualPlanSubTypeId { get; set; }
+
         public Rider Rider { get; set; }
         public class AnnuityRepository : Repository<DTCCToAcordMapping>
         {
@@ -212,6 +216,8 @@ namespace NewApps.Domain.Entities.ACORD
             };
         }
     }
+    public class QualPlanTypeTC: WithTC { }
+    public class QualPlanSubTypeTC: WithTC { }
     [Owned]
     public class Rider
     {

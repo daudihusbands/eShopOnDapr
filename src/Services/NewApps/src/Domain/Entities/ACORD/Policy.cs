@@ -18,7 +18,8 @@ namespace NewApps.Domain.Entities.ACORD
         [XmlArray("WORKFLOW_STEPS")]
         [XmlArrayItem("WORKFLOW_STEP")]
         public List<WorkflowStep> WorkflowSteps { get; set; }
-        public WithTC LineOfBusiness { get; set; }
+        public LineOfBusinessTC LineOfBusiness { get; set; }
+        public int? LineOfBusinessId { get; set; }
 
         //public string InitDepositAmt => {get
 
@@ -44,10 +45,14 @@ namespace NewApps.Domain.Entities.ACORD
         public string PlanName { get; set; }
         public string ShortName { get; set; }
 
-        public WithTC Jurisdiction { get; set; }
+        public JurisdictionTC Jurisdiction { get; set; }
+        public int? JurisdictionId { get; set; }
         public ApplicationInfo ApplicationInfo { get; set; }
 
 
 
     }
+
+    public class LineOfBusinessTC : WithTC { }
+    public class JurisdictionTC : WithTC { }
 }

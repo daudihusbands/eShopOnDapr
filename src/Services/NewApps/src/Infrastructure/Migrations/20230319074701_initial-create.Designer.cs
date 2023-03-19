@@ -12,7 +12,7 @@ using NewApps.Infrastructure.Persistence;
 namespace NewApps.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    [Migration("20230319065521_initial-create")]
+    [Migration("20230319074701_initial-create")]
     partial class initialcreate
     {
         /// <inheritdoc />
@@ -24,29 +24,6 @@ namespace NewApps.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.Annuity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("QualPlanSubTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QualPlanTypeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QualPlanSubTypeId");
-
-                    b.HasIndex("QualPlanTypeId");
-
-                    b.ToTable("Annuity");
-                });
 
             modelBuilder.Entity("NewApps.Domain.Entities.ACORD.FinancialActivity", b =>
                 {
@@ -65,7 +42,7 @@ namespace NewApps.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FinActivityTypeId")
+                    b.Property<int?>("FinActivityTypeId")
                         .HasColumnType("int");
 
                     b.Property<int?>("PolicyId")
@@ -92,7 +69,7 @@ namespace NewApps.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AccountDesignationId")
+                    b.Property<int?>("AccountDesignationId")
                         .HasColumnType("int");
 
                     b.Property<string>("CarrierAdminSystem")
@@ -105,17 +82,17 @@ namespace NewApps.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CurrencyTypeCodeId")
+                    b.Property<int?>("CurrencyTypeCodeId")
                         .HasColumnType("int");
 
                     b.Property<string>("DistributorClientAcctNum")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("HoldingStatusId")
+                    b.Property<int?>("HoldingStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("HoldingTypeCodeId")
+                    b.Property<int?>("HoldingTypeCodeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("LastModified")
@@ -149,9 +126,6 @@ namespace NewApps.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AnnuityId")
-                        .HasColumnType("int");
 
                     b.Property<string>("AnnuityWithdrawalChargePeriod")
                         .IsRequired()
@@ -257,8 +231,6 @@ namespace NewApps.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AnnuityId");
-
                     b.HasIndex("FinancialActivityId");
 
                     b.HasIndex("PaymentId");
@@ -280,7 +252,7 @@ namespace NewApps.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PaymentFormId")
+                    b.Property<int?>("PaymentFormId")
                         .HasColumnType("int");
 
                     b.Property<string>("SourceOfFundsDetails")
@@ -313,9 +285,6 @@ namespace NewApps.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("AnnuityId")
-                        .HasColumnType("int");
-
                     b.Property<string>("CarrierPartyID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -328,10 +297,10 @@ namespace NewApps.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("JurisdictionId")
+                    b.Property<int?>("JurisdictionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("LineOfBusinessId")
+                    b.Property<int?>("LineOfBusinessId")
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentAmt")
@@ -364,8 +333,6 @@ namespace NewApps.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AnnuityId");
-
                     b.HasIndex("JurisdictionId");
 
                     b.HasIndex("LineOfBusinessId");
@@ -381,6 +348,10 @@ namespace NewApps.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("TC")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -392,54 +363,94 @@ namespace NewApps.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("WithTC");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("WithTC");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.Annuity", b =>
+            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.AccountDesignationTC", b =>
                 {
-                    b.HasOne("NewApps.Domain.Entities.ACORD.WithTC", "QualPlanSubType")
-                        .WithMany()
-                        .HasForeignKey("QualPlanSubTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasBaseType("NewApps.Domain.Entities.ACORD.WithTC");
 
-                    b.HasOne("NewApps.Domain.Entities.ACORD.WithTC", "QualPlanType")
-                        .WithMany()
-                        .HasForeignKey("QualPlanTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasDiscriminator().HasValue("AccountDesignationTC");
+                });
 
-                    b.OwnsOne("NewApps.Domain.Entities.ACORD.Rider", "Rider", b1 =>
-                        {
-                            b1.Property<int>("AnnuityId")
-                                .HasColumnType("int");
+            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.CurrencyTypeCodeTC", b =>
+                {
+                    b.HasBaseType("NewApps.Domain.Entities.ACORD.WithTC");
 
-                            b1.Property<string>("RiderCode")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                    b.HasDiscriminator().HasValue("CurrencyTypeCodeTC");
+                });
 
-                            b1.HasKey("AnnuityId");
+            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.FinActivityTypeTC", b =>
+                {
+                    b.HasBaseType("NewApps.Domain.Entities.ACORD.WithTC");
 
-                            b1.ToTable("Annuity");
+                    b.HasDiscriminator().HasValue("FinActivityTypeTC");
+                });
 
-                            b1.WithOwner()
-                                .HasForeignKey("AnnuityId");
-                        });
+            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.HoldingStatusTC", b =>
+                {
+                    b.HasBaseType("NewApps.Domain.Entities.ACORD.WithTC");
 
-                    b.Navigation("QualPlanSubType");
+                    b.HasDiscriminator().HasValue("HoldingStatusTC");
+                });
 
-                    b.Navigation("QualPlanType");
+            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.HoldingTypeCode", b =>
+                {
+                    b.HasBaseType("NewApps.Domain.Entities.ACORD.WithTC");
 
-                    b.Navigation("Rider")
-                        .IsRequired();
+                    b.HasDiscriminator().HasValue("HoldingTypeCode");
+                });
+
+            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.JurisdictionTC", b =>
+                {
+                    b.HasBaseType("NewApps.Domain.Entities.ACORD.WithTC");
+
+                    b.HasDiscriminator().HasValue("JurisdictionTC");
+                });
+
+            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.LineOfBusinessTC", b =>
+                {
+                    b.HasBaseType("NewApps.Domain.Entities.ACORD.WithTC");
+
+                    b.HasDiscriminator().HasValue("LineOfBusinessTC");
+                });
+
+            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.PaymentFormTC", b =>
+                {
+                    b.HasBaseType("NewApps.Domain.Entities.ACORD.WithTC");
+
+                    b.HasDiscriminator().HasValue("PaymentFormTC");
+                });
+
+            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.QualPlanSubTypeTC", b =>
+                {
+                    b.HasBaseType("NewApps.Domain.Entities.ACORD.WithTC");
+
+                    b.HasDiscriminator().HasValue("QualPlanSubTypeTC");
+                });
+
+            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.QualPlanTypeTC", b =>
+                {
+                    b.HasBaseType("NewApps.Domain.Entities.ACORD.WithTC");
+
+                    b.HasDiscriminator().HasValue("QualPlanTypeTC");
+                });
+
+            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.SourceOfFundsTC", b =>
+                {
+                    b.HasBaseType("NewApps.Domain.Entities.ACORD.WithTC");
+
+                    b.HasDiscriminator().HasValue("SourceOfFundsTC");
                 });
 
             modelBuilder.Entity("NewApps.Domain.Entities.ACORD.FinancialActivity", b =>
                 {
-                    b.HasOne("NewApps.Domain.Entities.ACORD.WithTC", "FinActivityType")
+                    b.HasOne("NewApps.Domain.Entities.ACORD.FinActivityTypeTC", "FinActivityType")
                         .WithMany()
-                        .HasForeignKey("FinActivityTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FinActivityTypeId");
 
                     b.HasOne("NewApps.Domain.Entities.ACORD.Policy", null)
                         .WithMany("FinancialActivities")
@@ -450,29 +461,21 @@ namespace NewApps.Infrastructure.Migrations
 
             modelBuilder.Entity("NewApps.Domain.Entities.ACORD.Holding", b =>
                 {
-                    b.HasOne("NewApps.Domain.Entities.ACORD.WithTC", "AccountDesignation")
+                    b.HasOne("NewApps.Domain.Entities.ACORD.AccountDesignationTC", "AccountDesignation")
                         .WithMany()
-                        .HasForeignKey("AccountDesignationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AccountDesignationId");
 
-                    b.HasOne("NewApps.Domain.Entities.ACORD.WithTC", "CurrencyTypeCode")
+                    b.HasOne("NewApps.Domain.Entities.ACORD.CurrencyTypeCodeTC", "CurrencyTypeCode")
                         .WithMany()
-                        .HasForeignKey("CurrencyTypeCodeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CurrencyTypeCodeId");
 
-                    b.HasOne("NewApps.Domain.Entities.ACORD.WithTC", "HoldingStatus")
+                    b.HasOne("NewApps.Domain.Entities.ACORD.HoldingStatusTC", "HoldingStatus")
                         .WithMany()
-                        .HasForeignKey("HoldingStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HoldingStatusId");
 
-                    b.HasOne("NewApps.Domain.Entities.ACORD.WithTC", "HoldingTypeCode")
+                    b.HasOne("NewApps.Domain.Entities.ACORD.HoldingTypeCode", "HoldingTypeCode")
                         .WithMany()
-                        .HasForeignKey("HoldingTypeCodeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HoldingTypeCodeId");
 
                     b.HasOne("NewApps.Domain.Entities.ACORD.Policy", "Policy")
                         .WithMany()
@@ -493,10 +496,6 @@ namespace NewApps.Infrastructure.Migrations
 
             modelBuilder.Entity("NewApps.Domain.Entities.ACORD.OLifEExtension", b =>
                 {
-                    b.HasOne("NewApps.Domain.Entities.ACORD.Annuity", null)
-                        .WithMany("OLifEExtensions")
-                        .HasForeignKey("AnnuityId");
-
                     b.HasOne("NewApps.Domain.Entities.ACORD.FinancialActivity", null)
                         .WithMany("OLifEExtensions")
                         .HasForeignKey("FinancialActivityId");
@@ -1448,13 +1447,11 @@ namespace NewApps.Infrastructure.Migrations
                         .WithMany("Payments")
                         .HasForeignKey("FinancialActivityId");
 
-                    b.HasOne("NewApps.Domain.Entities.ACORD.WithTC", "PaymentForm")
+                    b.HasOne("NewApps.Domain.Entities.ACORD.PaymentFormTC", "PaymentForm")
                         .WithMany()
-                        .HasForeignKey("PaymentFormId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PaymentFormId");
 
-                    b.HasOne("NewApps.Domain.Entities.ACORD.WithTC", "SourceOfFundsTC")
+                    b.HasOne("NewApps.Domain.Entities.ACORD.SourceOfFundsTC", "SourceOfFundsTC")
                         .WithMany()
                         .HasForeignKey("SourceOfFundsTCId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1467,23 +1464,68 @@ namespace NewApps.Infrastructure.Migrations
 
             modelBuilder.Entity("NewApps.Domain.Entities.ACORD.Policy", b =>
                 {
-                    b.HasOne("NewApps.Domain.Entities.ACORD.Annuity", "Annuity")
+                    b.HasOne("NewApps.Domain.Entities.ACORD.JurisdictionTC", "Jurisdiction")
                         .WithMany()
-                        .HasForeignKey("AnnuityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("JurisdictionId");
 
-                    b.HasOne("NewApps.Domain.Entities.ACORD.WithTC", "Jurisdiction")
+                    b.HasOne("NewApps.Domain.Entities.ACORD.LineOfBusinessTC", "LineOfBusiness")
                         .WithMany()
-                        .HasForeignKey("JurisdictionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LineOfBusinessId");
 
-                    b.HasOne("NewApps.Domain.Entities.ACORD.WithTC", "LineOfBusiness")
-                        .WithMany()
-                        .HasForeignKey("LineOfBusinessId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.OwnsOne("NewApps.Domain.Entities.ACORD.Annuity", "Annuity", b1 =>
+                        {
+                            b1.Property<int>("PolicyId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("QualPlanSubTypeId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("QualPlanTypeId")
+                                .HasColumnType("int");
+
+                            b1.HasKey("PolicyId");
+
+                            b1.HasIndex("QualPlanSubTypeId");
+
+                            b1.HasIndex("QualPlanTypeId");
+
+                            b1.ToTable("Policy");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PolicyId");
+
+                            b1.HasOne("NewApps.Domain.Entities.ACORD.QualPlanSubTypeTC", "QualPlanSubType")
+                                .WithMany()
+                                .HasForeignKey("QualPlanSubTypeId");
+
+                            b1.HasOne("NewApps.Domain.Entities.ACORD.QualPlanTypeTC", "QualPlanType")
+                                .WithMany()
+                                .HasForeignKey("QualPlanTypeId");
+
+                            b1.OwnsOne("NewApps.Domain.Entities.ACORD.Rider", "Rider", b2 =>
+                                {
+                                    b2.Property<int>("AnnuityPolicyId")
+                                        .HasColumnType("int");
+
+                                    b2.Property<string>("RiderCode")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.HasKey("AnnuityPolicyId");
+
+                                    b2.ToTable("Policy");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("AnnuityPolicyId");
+                                });
+
+                            b1.Navigation("QualPlanSubType");
+
+                            b1.Navigation("QualPlanType");
+
+                            b1.Navigation("Rider")
+                                .IsRequired();
+                        });
 
                     b.OwnsOne("NewApps.Domain.Entities.ACORD.ApplicationInfo", "ApplicationInfo", b1 =>
                         {
@@ -1902,7 +1944,8 @@ namespace NewApps.Infrastructure.Migrations
                             b1.Navigation("Extensions");
                         });
 
-                    b.Navigation("Annuity");
+                    b.Navigation("Annuity")
+                        .IsRequired();
 
                     b.Navigation("ApplicationInfo")
                         .IsRequired();
@@ -1914,11 +1957,6 @@ namespace NewApps.Infrastructure.Migrations
                     b.Navigation("SERVICE_PROGRAMS");
 
                     b.Navigation("WorkflowSteps");
-                });
-
-            modelBuilder.Entity("NewApps.Domain.Entities.ACORD.Annuity", b =>
-                {
-                    b.Navigation("OLifEExtensions");
                 });
 
             modelBuilder.Entity("NewApps.Domain.Entities.ACORD.FinancialActivity", b =>

@@ -15,7 +15,6 @@ namespace NewApps.Domain.Entities.ACORD
         public static WithTC Create(string TC, string? Value = null) => new WithTC(TC, Value);
 
 
-
         [XmlAttribute("tc")]
         public string TC { get; set; }
 
