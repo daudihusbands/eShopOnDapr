@@ -11,6 +11,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="TodoItems\**" />
+      <Compile Remove="TodoLists\**" />
+      <EmbeddedResource Remove="TodoItems\**" />
+      <EmbeddedResource Remove="TodoLists\**" />
+      <None Remove="TodoItems\**" />
+      <None Remove="TodoLists\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <None Remove="appsettings.json" />
     </ItemGroup>
 
@@ -31,11 +40,12 @@
         <PackageReference Include="FluentAssertions" Version="6.9.0" />
         <PackageReference Include="Moq" Version="4.18.4" />
         <PackageReference Include="Respawn" Version="6.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.4" />
+
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Application\Application.csproj" />
-        <ProjectReference Include="..\..\src\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\..\src\WebUI\WebUI.csproj" />
     </ItemGroup>
 
 </Project>

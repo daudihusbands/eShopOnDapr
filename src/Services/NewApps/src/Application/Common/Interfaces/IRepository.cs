@@ -2,7 +2,7 @@
 using CommonExtensions;
 using NewApps.Domain.Common;
 
-namespace HusJel.Applications.API.Common.Interfaces.Persistence;
+namespace NewApps.Application.Common.Interfaces;
 
 public interface IRepository
 {

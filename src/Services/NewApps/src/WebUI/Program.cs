@@ -1,3 +1,5 @@
+using NewApps.Application;
+using NewApps.Infrastructure;
 using NewApps.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,7 +44,7 @@ app.UseSwaggerUi3(settings =>
 app.UseRouting();
 
 app.UseAuthentication();
-app.UseIdentityServer();
+//app.UseIdentityServer();
 app.UseAuthorization();
 
 app.MapControllerRoute(

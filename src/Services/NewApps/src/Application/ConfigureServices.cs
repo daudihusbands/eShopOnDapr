@@ -2,8 +2,9 @@
 using NewApps.Application.Common.Behaviours;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace NewApps.Application;
 
 public static class ConfigureServices
 {

@@ -2,13 +2,16 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using NewApps.Application.Common.Interfaces;
+using NewApps.Application.Holdings;
 using NewApps.Infrastructure.Identity;
 using NewApps.Infrastructure.Persistence;
 using NewApps.Infrastructure.Persistence.Interceptors;
+using NewApps.Infrastructure.Repositories;
 using NewApps.Infrastructure.Services;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace NewApps.Infrastructure;
 
 public static class ConfigureServices
 {
@@ -27,6 +30,7 @@ public static class ConfigureServices
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                     builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
         }
+        services.AddScoped<IHoldingRepository, HoldingRepository>();
 
         //services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 

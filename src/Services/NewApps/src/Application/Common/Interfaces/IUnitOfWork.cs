@@ -1,4 +1,4 @@
-﻿namespace HusJel.Applications.API.Common.Interfaces.Persistence;
+﻿namespace NewApps.Application.Common.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
