@@ -10,13 +10,13 @@ using NewApps.Infrastructure.Persistence.Interceptors;
 
 namespace NewApps.Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext, IUnitOfWork
+public class AppDataContext : DbContext, IUnitOfWork
 {
     private readonly IMediator _mediator;
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
 
-    public ApplicationDbContext(
-        DbContextOptions<ApplicationDbContext> options,
+    public AppDataContext(
+        DbContextOptions<AppDataContext> options,
         IMediator mediator,
         AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor)
         : base(options)
@@ -25,7 +25,7 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
     }
 
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IMediator mediator) : base(options)
+    public AppDataContext(DbContextOptions<AppDataContext> options, IMediator mediator) : base(options)
     {
         _mediator = mediator;
     }

@@ -15,7 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="Persistence\ApplicationDbContextInitialiser.cs" />
       <Compile Remove="Persistence\Configurations\TodoItemConfiguration.cs" />
       <Compile Remove="Persistence\Configurations\TodoListConfiguration.cs" />
     </ItemGroup>

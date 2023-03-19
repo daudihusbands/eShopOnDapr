@@ -43,13 +43,13 @@ public static class ServiceCollectionExtensions
                 _connection.Open();
                 _connection.EnableExtensions();
 
-                var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                var options = new DbContextOptionsBuilder<AppDataContext>()
                         .UseSqlite(_connection, sqlOptions =>
                         {
                         })
                         .EnableSensitiveDataLogging()
                         .Options;
-                var dbContext = new ApplicationDbContext(options, mediator);
+                var dbContext = new AppDataContext(options, mediator);
                 dbContext.Database.EnsureCreated();
                 return dbContext;
 
@@ -66,9 +66,9 @@ public static class ServiceCollectionExtensions
 
             var connectionString = serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection");
 
-            services.AddDbContext<ApplicationDbContext>((host, opts) =>
+            services.AddDbContext<AppDataContext>((host, opts) =>
             {
-                opts.UseSqlServer(connectionString, b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
+                opts.UseSqlServer(connectionString, b => b.MigrationsAssembly(typeof(AppDataContext).Assembly.FullName));
             });
 
 

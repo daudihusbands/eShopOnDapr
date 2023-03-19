@@ -13,7 +13,7 @@ using static Testing;
 public class CreateApplicationTests : BaseTestFixture
 {
     [Test]
-    public void ShouldRegister_IHoldingRepository()
+    public async Task ShouldRegister_IHoldingRepository()
     {
         var repo = GetService<IHoldingRepository>();
 
@@ -21,6 +21,8 @@ public class CreateApplicationTests : BaseTestFixture
         {
             repo.Should().NotBeNull();
             repo.Should().BeOfType<HoldingRepository>();
+
+            var holdings = await repo.GetAll();
         }
     }
     [Test]

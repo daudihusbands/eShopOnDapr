@@ -16,7 +16,7 @@ public class Repository<T> : RepositoryBase<T>, IRepository<T>
     where T : BaseEntity//, IAggregateRoot
 
 {
-    protected ApplicationDbContext dataContext;
+    protected AppDataContext dataContext;
     public IUnitOfWork UnitOfWork => dataContext;
 
 
@@ -24,7 +24,7 @@ public class Repository<T> : RepositoryBase<T>, IRepository<T>
     /// Constructor
     /// </summary>
     /// <param name="connectionString"></param>
-    public Repository(ApplicationDbContext dataContext) : base(dataContext)
+    public Repository(AppDataContext dataContext) : base(dataContext)
     {
         this.dataContext = dataContext;
     }
@@ -111,9 +111,9 @@ public class Repository<T> : RepositoryBase<T>, IRepository<T>
         return Task.FromResult(Update(entity));
     }
 
-    public virtual IEnumerable<T> GetAll()
+    public virtual  async Task<IEnumerable<T>> GetAll()
     {
-        return DbSet;
+        return await DbSet.ToListAsync();
     }
 
     public void Remove(T item)

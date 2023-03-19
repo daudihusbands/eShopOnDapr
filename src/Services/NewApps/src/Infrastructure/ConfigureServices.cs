@@ -21,38 +21,38 @@ public static class ConfigureServices
 
         if (configuration.GetValue<bool>("UseInMemoryDatabase"))
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<AppDataContext>(options =>
                 options.UseInMemoryDatabase("NewAppsDb"));
         }
         else
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<AppDataContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                    builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+                    builder => builder.MigrationsAssembly(typeof(AppDataContext).Assembly.FullName)));
         }
         services.AddScoped<IHoldingRepository, HoldingRepository>();
 
         //services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
-        //services.AddScoped<ApplicationDbContextInitialiser>();
+        services.AddScoped<ApplicationDbContextInitialiser>();
         services.AddTransient<IDateTime, DateTimeService>();
 
-        services
-            .AddDefaultIdentity<ApplicationUser>()
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+        //services
+        //    .AddDefaultIdentity<ApplicationUser>()
+        //    .AddRoles<IdentityRole>()
+        //    .AddEntityFrameworkStores<AppDataContext>();
 
         //services.AddIdentityServer()
         //    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
-        services.AddTransient<IIdentityService, IdentityService>();
+        //services.AddTransient<IIdentityService, IdentityService>();
         //services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
-        services.AddAuthentication()
-            .AddIdentityServerJwt();
+        //services.AddAuthentication()
+        //    .AddIdentityServerJwt();
 
-        services.AddAuthorization(options =>
-            options.AddPolicy("CanPurge", policy => policy.RequireRole("Administrator")));
+        //services.AddAuthorization(options =>
+        //    options.AddPolicy("CanPurge", policy => policy.RequireRole("Administrator")));
 
         return services;
     }

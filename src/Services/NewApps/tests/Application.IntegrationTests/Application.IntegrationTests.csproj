@@ -20,6 +20,16 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Remove="DatabaseInitializer.cs" />
+      <Compile Remove="HttpResponseMessageExtensions.cs" />
+      <Compile Remove="HttpTestBase.cs" />
+      <Compile Remove="IntegrationTestExtensions.cs" />
+      <Compile Remove="TestBase.cs" />
+      <Compile Remove="TestExtensions.cs" />
+      <Compile Remove="TestStartup.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <None Remove="appsettings.json" />
     </ItemGroup>
 

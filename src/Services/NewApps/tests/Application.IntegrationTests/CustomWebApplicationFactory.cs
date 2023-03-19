@@ -33,10 +33,10 @@ internal class CustomWebApplicationFactory : WebApplicationFactory<Program>
                     s.UserId == GetCurrentUserId()));
 
             services
-                .Remove<DbContextOptions<ApplicationDbContext>>()
-                .AddDbContext<ApplicationDbContext>((sp, options) =>
+                .Remove<DbContextOptions<AppDataContext>>()
+                .AddDbContext<AppDataContext>((sp, options) =>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-                        builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+                        builder => builder.MigrationsAssembly(typeof(AppDataContext).Assembly.FullName)));
         });
     }
 }

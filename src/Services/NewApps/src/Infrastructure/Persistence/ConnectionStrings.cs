@@ -1,5 +1,5 @@
 ﻿namespace HusJel.Applications.Infrastructure.Persistence;
 public class ConnectionStrings
 {
-    public string Applications { get; set; }
+    public string? DefaultConnection { get; set; }
 }

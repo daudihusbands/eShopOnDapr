@@ -17,7 +17,7 @@ public interface IRepository<T> : IRepositoryBase<T> where T : BaseEntity//, IAg
     //public interface IRepository<T> : IRepository where T : IAggregateRoot
     //{
     IUnitOfWork UnitOfWork { get; }
-    IEnumerable<T> GetAll();
+    Task<IEnumerable<T>> GetAll();
     T Add(T entity);
     Task<T> AddAsync(T entity);
     Task<T> GetById(int id);

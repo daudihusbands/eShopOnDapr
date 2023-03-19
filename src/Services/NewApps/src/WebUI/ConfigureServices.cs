@@ -20,7 +20,7 @@ public static class ConfigureServices
         services.AddHttpContextAccessor();
 
         services.AddHealthChecks()
-            .AddDbContextCheck<ApplicationDbContext>();
+            .AddDbContextCheck<AppDataContext>();
 
         services.AddControllersWithViews(options =>
             options.Filters.Add<ApiExceptionFilterAttribute>())
