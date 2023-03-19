@@ -25,10 +25,10 @@ public class AppDataContext : DbContext, IUnitOfWork
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
     }
 
-    public AppDataContext(DbContextOptions<AppDataContext> options, IMediator mediator) : base(options)
-    {
-        _mediator = mediator;
-    }
+    //public AppDataContext(DbContextOptions<AppDataContext> options, IMediator mediator) : base(options)
+    //{
+    //    _mediator = mediator;
+    //}
 
 
     public DbSet<Holding> Holdings => Set<Holding>();

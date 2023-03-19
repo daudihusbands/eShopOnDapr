@@ -22,61 +22,61 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddTestDbContexts(this IServiceCollection services, bool? useSqlite = true)
-    {
-        var dtccConnectionString = "DataSource=:memory:";
-        // var suitDdtccConnectionString = "DataSource=:memory:";
-        //var dtccConnectionString = "DataSource=Apps.db";
-        //var suitDdtccConnectionString = "DataSource=Suitability.db";
+    //public static IServiceCollection AddTestDbContexts(this IServiceCollection services, bool? useSqlite = true)
+    //{
+    //    var dtccConnectionString = "DataSource=:memory:";
+    //    // var suitDdtccConnectionString = "DataSource=:memory:";
+    //    //var dtccConnectionString = "DataSource=Apps.db";
+    //    //var suitDdtccConnectionString = "DataSource=Suitability.db";
 
 
-        if (useSqlite.GetValueOrDefault())
-        {
-            // Todo - use NoOpMediator here
-            var serviceProvider = services.BuildServiceProvider();
-            var mediator = serviceProvider.GetRequiredService<IMediator>();
+    //    if (useSqlite.GetValueOrDefault())
+    //    {
+    //        // Todo - use NoOpMediator here
+    //        var serviceProvider = services.BuildServiceProvider();
+    //        var mediator = serviceProvider.GetRequiredService<IMediator>();
 
-            services.AddScoped(sp =>
-            {
+    //        services.AddScoped(sp =>
+    //        {
 
-                var _connection = new SqliteConnection(dtccConnectionString);
-                _connection.Open();
-                _connection.EnableExtensions();
+    //            var _connection = new SqliteConnection(dtccConnectionString);
+    //            _connection.Open();
+    //            _connection.EnableExtensions();
 
-                var options = new DbContextOptionsBuilder<AppDataContext>()
-                        .UseSqlite(_connection, sqlOptions =>
-                        {
-                        })
-                        .EnableSensitiveDataLogging()
-                        .Options;
-                var dbContext = new AppDataContext(options, mediator);
-                dbContext.Database.EnsureCreated();
-                return dbContext;
+    //            var options = new DbContextOptionsBuilder<AppDataContext>()
+    //                    .UseSqlite(_connection, sqlOptions =>
+    //                    {
+    //                    })
+    //                    .EnableSensitiveDataLogging()
+    //                    .Options;
+    //            var dbContext = new AppDataContext(options, mediator);
+    //            dbContext.Database.EnsureCreated();
+    //            return dbContext;
 
-            });
-
-
-
-        }
-        else
-        {
-            // we are only doing setup here because we need to Drop/Recreate the database
-            var serviceProvider = services
-                 .BuildServiceProvider();
-
-            var connectionString = serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection");
-
-            services.AddDbContext<AppDataContext>((host, opts) =>
-            {
-                opts.UseSqlServer(connectionString, b => b.MigrationsAssembly(typeof(AppDataContext).Assembly.FullName));
-            });
+    //        });
 
 
 
+    //    }
+    //    else
+    //    {
+    //        // we are only doing setup here because we need to Drop/Recreate the database
+    //        var serviceProvider = services
+    //             .BuildServiceProvider();
 
-        }
+    //        var connectionString = serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection");
 
-        return services;
-    }
+    //        services.AddDbContext<AppDataContext>((host, opts) =>
+    //        {
+    //            opts.UseSqlServer(connectionString, b => b.MigrationsAssembly(typeof(AppDataContext).Assembly.FullName));
+    //        });
+
+
+
+
+    //    }
+
+    //    return services;
+    //}
 
 }
