@@ -1,6 +1,6 @@
 ﻿using Ardalis.Specification;
 using CommonExtensions;
-using HusJel.Applications.Domain.Common;
+using NewApps.Domain.Common;
 
 namespace HusJel.Applications.API.Common.Interfaces.Persistence;
 

@@ -1,7 +1,10 @@
-﻿using System.Reflection;
+﻿
+
+using System.Reflection;
 using HusJel.Applications.API.Common.Interfaces.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NewApps.Domain.Entities.ACORD;
 using NewApps.Infrastructure.Persistence.Interceptors;
 
 namespace NewApps.Infrastructure.Persistence;

@@ -9,7 +9,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Files\**" />
+      <EmbeddedResource Remove="Files\**" />
+      <None Remove="Files\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Compile Remove="Persistence\ApplicationDbContextInitialiser.cs" />
+      <Compile Remove="Persistence\Configurations\TodoItemConfiguration.cs" />
+      <Compile Remove="Persistence\Configurations\TodoListConfiguration.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -23,6 +31,10 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Application\Application.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Persistence\Configurations\" />
     </ItemGroup>
 
 </Project>
