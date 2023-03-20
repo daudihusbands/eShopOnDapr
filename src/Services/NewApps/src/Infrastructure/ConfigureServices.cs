@@ -30,8 +30,10 @@ public static class ConfigureServices
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                     builder => builder.MigrationsAssembly(typeof(AppDataContext).Assembly.FullName)));
         }
-        // services.AddScoped<IHoldingRepository, HoldingRepository>();
-        services.AddScoped<IHoldingRepository>(provider => new HoldingRepository( provider.GetRequiredService<AppDataContext>()));
+        services.AddScoped<IHoldingRepository, HoldingRepository>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped(typeof(ITCRepository<>), typeof(TCRepository<>));
+        //services.AddScoped<IHoldingRepository>(provider => new HoldingRepository( provider.GetRequiredService<AppDataContext>()));
 
         //services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 

@@ -17,6 +17,7 @@
     <ItemGroup>
       <Compile Remove="Persistence\Configurations\TodoItemConfiguration.cs" />
       <Compile Remove="Persistence\Configurations\TodoListConfiguration.cs" />
+      <Compile Remove="Services\Acord103\Converters\SerializerBasedAcord103Converter.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -35,6 +36,10 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Application\Application.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Services\Acord103\Converters\" />
     </ItemGroup>
 
 </Project>

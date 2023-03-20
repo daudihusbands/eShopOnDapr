@@ -166,7 +166,7 @@ public class Repository<T> : RepositoryBase<T>, IRepository<T>
     protected virtual Expression<Func<T, bool>> GetDefaultSearch(PagedFinder<T> finder) => (f) => f.Id.ToString().Contains(finder.Term);
     public virtual IQueryable<T> GetDefaultIncludes()
     {
-        return DbSet;
+        return DbSet!;
     }
     public virtual IQueryable<T> GetSearchIncludes()
     {
@@ -176,16 +176,16 @@ public class Repository<T> : RepositoryBase<T>, IRepository<T>
 
 }
 
-//public class EFRepositoryCoded<T> : EFRepository<T>, IRepositoryCoded<T> where T : EntityCoded
-//{
-//    public EFRepositoryCoded(AppDataContext dataContext) : base(dataContext)
-//    {
-//    }
+public class TCRepository<T> : Repository<T>, ITCRepository<T> where T : WithTC
+{
+    public TCRepository(AppDataContext dataContext) : base(dataContext)
+    {
+    }
 
-//    public virtual async Task<T> GetByCode(string code)
-//    {
-//        return await GetDefaultIncludes().SingleOrDefaultAsync(x => x.Code == code);
-//    }
-//    protected override Expression<Func<T, object>> GetDefaultSortField() => x => x.Code;
+    public virtual async Task<T> GetByCode(string code)
+    {
+        return await GetDefaultIncludes().SingleOrDefaultAsync(x => x.TC == code);
+    }
+    protected override Expression<Func<T, object>> GetDefaultSortField() => x => x.TC;
 
-//}
+}

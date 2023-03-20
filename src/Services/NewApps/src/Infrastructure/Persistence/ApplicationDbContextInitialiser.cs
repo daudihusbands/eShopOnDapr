@@ -3,6 +3,7 @@ using NewApps.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 namespace NewApps.Infrastructure.Persistence;
 
@@ -10,18 +11,21 @@ public class ApplicationDbContextInitialiser
 {
     private readonly ILogger<ApplicationDbContextInitialiser> _logger;
     private readonly AppDataContext _context;
+    private readonly IConfiguration _configuration;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
     public ApplicationDbContextInitialiser(
         ILogger<ApplicationDbContextInitialiser> logger,
-        AppDataContext context
+        AppDataContext context,
+        IConfiguration configuration
         //UserManager<ApplicationUser> userManager,
         //RoleManager<IdentityRole> roleManager
         )
     {
         _logger = logger;
         _context = context;
+        _configuration = configuration;
         //_userManager = userManager;
         //_roleManager = roleManager;
     }
@@ -46,7 +50,7 @@ public class ApplicationDbContextInitialiser
     {
         try
         {
-           // await TrySeedAsync();
+            await TrySeedAsync();
         }
         catch (Exception ex)
         {
@@ -57,25 +61,27 @@ public class ApplicationDbContextInitialiser
 
     public async Task TrySeedAsync()
     {
-        // Default roles
-        var administratorRole = new IdentityRole("Administrator");
+        var connString = _configuration.GetConnectionString(nameof(ConnectionStrings.DefaultConnection));
+        _logger.LogInformation($"Connectionstring is: {connString}");
+        //// Default roles
+        //var administratorRole = new IdentityRole("Administrator");
 
-        if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
-        {
-            await _roleManager.CreateAsync(administratorRole);
-        }
+        //if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
+        //{
+        //    await _roleManager.CreateAsync(administratorRole);
+        //}
 
-        // Default users
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
+        //// Default users
+        //var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
 
-        if (_userManager.Users.All(u => u.UserName != administrator.UserName))
-        {
-            await _userManager.CreateAsync(administrator, "Administrator1!");
-            if (!string.IsNullOrWhiteSpace(administratorRole.Name))
-            {
-                await _userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
-            }
-        }
+        //if (_userManager.Users.All(u => u.UserName != administrator.UserName))
+        //{
+        //    await _userManager.CreateAsync(administrator, "Administrator1!");
+        //    if (!string.IsNullOrWhiteSpace(administratorRole.Name))
+        //    {
+        //        await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
+        //    }
+        //}
 
         //// Default data
         //// Seed, if necessary
@@ -95,5 +101,14 @@ public class ApplicationDbContextInitialiser
 
         //    await _context.SaveChangesAsync();
         //}
+
+        if (!_context.Set<HoldingTypeTC>().Any())
+        {
+            await _context.AddRangeAsync(new[] {
+                HoldingTypeTC.Policy()
+            });
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

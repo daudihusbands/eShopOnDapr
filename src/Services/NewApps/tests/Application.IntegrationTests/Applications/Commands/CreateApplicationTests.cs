@@ -12,23 +12,33 @@ using static Testing;
 
 public class CreateApplicationTests : BaseTestFixture
 {
+
+    [SetUp]
+    public async Task InitThese()
+    {
+        var init = GetService<ApplicationDbContextInitialiser>();
+        await init.InitialiseAsync();
+        await init.SeedAsync();
+
+    }
     [Test]
     public async Task ShouldRegister_IHoldingRepository()
     {
-        var repo =  GetService<IHoldingRepository>();
+        var repo = GetService<IHoldingRepository>();
 
         using (var scope = new AssertionScope())
         {
 
         }
-            repo.Should().NotBeNull();
-            repo.Should().BeOfType<HoldingRepository>();
-            var holdings = await repo.GetAll();
+        repo.Should().NotBeNull();
+        repo.Should().BeOfType<HoldingRepository>();
+        var holdings = await repo.GetAll();
     }
     [Test]
-    public void ShouldRequireMinimumFields()
+    public async Task ShouldCreateOLife()
     {
-        var command = new CreateOLifEApplication.Command(HoldingTypeCode.Policy());
+        var command = new CreateOLifEApplication.Command(HoldingTypeTC.Policy(), "DistributorClientAcctNum");
+        var result = await SendAsync(command);
 
         using (var scope = new AssertionScope())
         {
@@ -39,5 +49,5 @@ public class CreateApplicationTests : BaseTestFixture
         }
     }
 
-   
+
 }

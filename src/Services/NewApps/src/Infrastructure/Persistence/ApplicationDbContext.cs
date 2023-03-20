@@ -32,11 +32,18 @@ public class AppDataContext : DbContext, IUnitOfWork
 
 
     public DbSet<Holding> Holdings => Set<Holding>();
-
+    private const string Schema_TC = "tc";
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+    //    builder.Entity<WithTC>()
+    //        .ToTable(nameof(WithTC), Schema_TC)
+    //;
+    //    builder.Entity<HoldingTypeTC>()
+    //        .HasBaseType<WithTC>()
+    //        .ToTable(nameof(HoldingTypeTC), Schema_TC)
+    //        ;
         base.OnModelCreating(builder);
     }
 

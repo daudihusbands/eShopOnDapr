@@ -35,3 +35,7 @@ public interface IRepository<T> : IRepositoryBase<T> where T : BaseEntity//, IAg
 //{
 //    Task<T> GetByCode(string code);
 //}
+public interface ITCRepository<T> : IRepository<T> where T : WithTC
+{
+    Task<T> GetByCode(string code);
+}

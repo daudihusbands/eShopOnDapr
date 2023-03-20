@@ -158,7 +158,7 @@ namespace NewApps.Domain.Entities.ACORD
         public int? QualPlanSubTypeId { get; set; }
 
         public Rider Rider { get; set; }
-        public class AnnuityRepository : Repository<DTCCToAcordMapping>
+        public class AnnuityRepository : AcordRepository<DTCCToAcordMapping>
         {
             public override ICollection<DTCCToAcordMapping> List => new List<DTCCToAcordMapping> {
                 new DTCCToAcordMapping { DTCCCode="1030", AcordValue="OLI_QUALPLN_401K", TC=2, Description="401(k)" },
@@ -205,7 +205,7 @@ namespace NewApps.Domain.Entities.ACORD
             };
         }
 
-        public class CDSCRepository : Repository<DTCCToAcordMapping>
+        public class CDSCRepository : AcordRepository<DTCCToAcordMapping>
         {
             public override ICollection<DTCCToAcordMapping> List => new List<DTCCToAcordMapping> {
                 new DTCCToAcordMapping { DTCCCode="SC02O05", AcordValue="5" },

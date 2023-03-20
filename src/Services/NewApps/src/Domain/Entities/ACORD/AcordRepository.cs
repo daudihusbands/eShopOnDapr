@@ -2,7 +2,7 @@
 {
     public partial class Acord
     {
-        public abstract class Repository<T> where T : DTCCToAcordMapping
+        public abstract class AcordRepository<T> where T : DTCCToAcordMapping
         {
             public abstract ICollection<T> List { get; }
             public virtual T ByDTCCCode(string dtccCode) => List.FirstOrDefault(x => x.DTCCCode == dtccCode);
@@ -29,7 +29,7 @@
         }
 
 
-        public class Node
+        public class AcordNode
         {
             public const string TXLife = "TXLife";
             public const string OLifEExtension = "OLifEExtension";
@@ -102,7 +102,7 @@
             public const string Holding = "Holding";
             public const string AccountDesignation = "AccountDesignation";
         }
-        public class Attribute
+        public class AcordAttribute
         {
             public const string ID = "id";
             public const string TC = "tc";

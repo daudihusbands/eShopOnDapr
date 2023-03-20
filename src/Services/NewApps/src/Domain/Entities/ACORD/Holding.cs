@@ -3,35 +3,41 @@
     public class Holding : BaseAuditableEntity
     {
         private Holding() { }
-        public Holding(HoldingTypeCode holdingTypeCode)
+        public Holding(
+            HoldingTypeTC holdingTypeCode,
+            string? distributorClientAcctNum,
+            string? carrierAdminSystem = "DTCC")
         {
-            HoldingTypeCode = holdingTypeCode;
+            HoldingTypeCode = holdingTypeCode ?? throw new ArgumentNullException(nameof(holdingTypeCode), "Cannot instantiate Holding with empty HoldingTypeCode");
+            CarrierAdminSystem = carrierAdminSystem;
+            DistributorClientAcctNum = distributorClientAcctNum;
         }
 
-        public Policy Policy { get; set; }
-        public HoldingTypeCode HoldingTypeCode { get; set; }
-        public int? HoldingTypeCodeId { get; set; }
-        public HoldingStatusTC HoldingStatus { get; set; }
-        public int? HoldingStatusId { get; set; }
-        public string CarrierAdminSystem { get; set; }
-        public CurrencyTypeCodeTC CurrencyTypeCode { get; set; }
-        public int? CurrencyTypeCodeId { get; set; }
-        public AccountDesignationTC AccountDesignation { get; set; }
-        public int? AccountDesignationId { get; set; }
-        public string DistributorClientAcctNum { get; set; }
+        public Policy Policy { get; private set; }
+        public int? PolicyId { get; private set; }
+        public HoldingTypeTC HoldingTypeCode { get; private set; }
+        public int? HoldingTypeCodeId { get; private set; }
+        public HoldingStatusTC HoldingStatus { get; private set; }
+        public int? HoldingStatusId { get; private set; }
+        public string CarrierAdminSystem { get; private set; }
+        public CurrencyTypeCodeTC CurrencyTypeCode { get; private set; }
+        public int? CurrencyTypeCodeId { get; private set; }
+        public AccountDesignationTC AccountDesignation { get; private set; }
+        public int? AccountDesignationId { get; private set; }
+        public string? DistributorClientAcctNum { get; private set; }
     }
     public class HoldingStatusTC : WithTC { }
     public class CurrencyTypeCodeTC : WithTC { }
     public class AccountDesignationTC : WithTC { }
-    public class HoldingTypeCode : WithTC
+    public class HoldingTypeTC : WithTC
     {
-        private HoldingTypeCode() { }
-        public HoldingTypeCode(int TC, string Value)
+        private HoldingTypeTC() { }
+        public HoldingTypeTC(int TC, string Value)
         {
             this.TC = TC.ToString();
             this.Value = Value;
         }
 
-        public static HoldingTypeCode Policy() => new HoldingTypeCode(TC: 2, Value: "Policy");
+        public static HoldingTypeTC Policy() => new HoldingTypeTC(TC: 2, Value: "Policy");
     }
 }

@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Common\Behaviours\LoggingBehaviour.cs" />
       <Compile Remove="Common\Interfaces\IApplicationDbContext.cs" />
       <Compile Remove="Common\Interfaces\ICsvFileBuilder.cs" />
       <Compile Remove="Common\Models\LookupDto.cs" />
