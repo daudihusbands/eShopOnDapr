@@ -133,9 +133,11 @@ public partial class Testing
     }
     public static T GetService<T>() where T : class
     {
-        using var scope = _scopeFactory.CreateScope();
+        //using var scope = _scopeFactory.CreateScope();
 
-        var service = scope.ServiceProvider.GetRequiredService<T>();
+        //var service = scope.ServiceProvider.GetRequiredService<T>();
+        
+        var service = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<T>();
 
         return service;
     }

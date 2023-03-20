@@ -15,15 +15,15 @@ public class CreateApplicationTests : BaseTestFixture
     [Test]
     public async Task ShouldRegister_IHoldingRepository()
     {
-        var repo = GetService<IHoldingRepository>();
+        var repo =  GetService<IHoldingRepository>();
 
         using (var scope = new AssertionScope())
         {
+
+        }
             repo.Should().NotBeNull();
             repo.Should().BeOfType<HoldingRepository>();
-
             var holdings = await repo.GetAll();
-        }
     }
     [Test]
     public void ShouldRequireMinimumFields()
